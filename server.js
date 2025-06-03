@@ -13,6 +13,7 @@ app.post('/api/employees', async (req,res,next)=>{
 			(name , created_at , updated_at ,department_id)
 			VALUES
 			($1 , now() , now() , $2)
+			RETURNING *;
 		`;
 		const response = await client.query(SQL, [req.body.name, req.body.department_id])
 		res.send(response.rows[0])
@@ -65,6 +66,18 @@ app.put('/api/employees/:id', async (req,res,next)=>{
 
 
 // DELETE
+app.delete('/api/employees/:id', async (req,res,next)=>{
+	try {
+		const SQL = `
+			DELETE FROM employees
+			WHERE id=$1;
+		`
+		await client.query(SQL, [req.params.id])
+		res.sendStatus(204)
+	} catch (error) {
+		next(error)
+	}
+})
 
 
 const init = async (req,res,next) => {
