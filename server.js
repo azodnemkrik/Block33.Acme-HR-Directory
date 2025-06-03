@@ -6,6 +6,21 @@ app.use(express.json())
 app.use(require("morgan")("dev"))
 
 // CREATE
+app.post('/api/employees', async (req,res,next)=>{
+	try {
+		const SQL = `
+			INSERT INTO employees
+			(name , created_at , updated_at ,department_id)
+			VALUES
+			($1 , now() , now() , $2)
+		`;
+		const response = await client.query(SQL, [req.body.name, req.body.department_id])
+		res.send(response.rows[0])
+	} catch (error) {
+		next(error)
+	}
+})
+
 // READ
 app.get('/api/departments', async (req,res,next)=>{
 	try {
