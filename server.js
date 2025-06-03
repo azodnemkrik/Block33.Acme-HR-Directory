@@ -3,6 +3,26 @@ const app = express()
 const pg = require("pg")
 const client = new pg.Client("postgres://localhost/acme_hr_directory" || process.env.DATABASE)
 app.use(express.json())
+app.use(require("morgan")("dev"))
+
+// CREATE
+// READ
+app.get('/api/departments', async (req,res,next)=>{
+	try {
+		const SQL = `
+			SELECT *
+			FROM departments
+		`;
+		const response = await client.query(SQL)
+		res.send(response.rows)
+	} catch (error) {
+		next(error)
+	}
+})
+
+// UPDATE
+// DELETE
+
 
 const init = async (req,res,next) => {
 	// MAKE CONNECTION
@@ -19,12 +39,12 @@ const init = async (req,res,next) => {
 			name VARCHAR(100)
 		);
 		
-		CREATE TABLE employess(
+		CREATE TABLE employees(
 			id SERIAL PRIMARY KEY,
 			name VARCHAR(100),
 			created_at TIMESTAMP DEFAULT now(),
 			updated_at TIMESTAMP DEFAULT now(),
-			department_id INTEGER REFERENCES departments(id)
+			department_id INTEGER REFERENCES departments(id) NOT NULL
 		);
 
 		INSERT INTO departments(name) VALUES ('Administration');
@@ -32,17 +52,58 @@ const init = async (req,res,next) => {
 		INSERT INTO departments(name) VALUES ('Development');
 		INSERT INTO departments(name) VALUES ('Animation');
 
-		INSERT INTO employess(name, department_id) VALUES ('Weldon Franklin' , 1);
-		INSERT INTO employess(name, department_id) VALUES ('Leonardo Johnson' , 2);
-		INSERT INTO employess(name, department_id) VALUES ('Jerry Cobb' , 4);
-		INSERT INTO employess(name, department_id) VALUES ('Jami Liu , 4);
-		INSERT INTO employess(name, department_id) VALUES ('Summer Mccormick , 3);
-		INSERT INTO employess(name, department_id) VALUES ('Audrey Krueger , 3);
-		INSERT INTO employess(name, department_id) VALUES ('Kermit Hull , 2);
-		INSERT INTO employess(name, department_id) VALUES ('Nick Alexander , 1);
-		INSERT INTO employess(name, department_id) VALUES ('Chasity Garrett , 2);
-		INSERT INTO employess(name, department_id) VALUES ('Frankie Crosby , 4);
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Weldon Franklin' , 1);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Leonardo Johnson' , 2);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Jerry Cobb' , 4);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Jami Liu' , 4);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Summer Mccormick' , 3);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Audrey Krueger', 3);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Kermit Hull' , 2);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Nick Alexander' , 1);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Chasity Garrett' , 2);
+		
+		INSERT INTO employees
+		(name, department_id)
+		VALUES
+		('Frankie Crosby' , 4);
 	`
+
+	await client.query(SQL)
 
 	// CREATE A PORT & LISTEN
 	const PORT = 3000
