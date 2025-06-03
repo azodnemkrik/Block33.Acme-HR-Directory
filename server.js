@@ -33,6 +33,22 @@ app.get('/api/employees', async (req,res,next)=>{
 })
 
 // UPDATE
+app.put('/api/employees/:id', async (req,res,next)=>{
+	try {
+		const SQL = `
+			UPDATE employees
+			SET name=$1, updated_at=now(), department_id =$2
+			WHERE id=$3
+			RETURNING *;
+		`
+		const response = await client.query(SQL, [req.body.name, req.body.department_id, req.params.id])
+		res.send(response.rows[0])
+	} catch (error) {
+		next(error)
+	}
+})
+
+
 // DELETE
 
 
